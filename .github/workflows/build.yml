@@ -1,0 +1,49 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # also lets you trigger manually from GitHub UI
+
+jobs:
+  build:
+    runs-on: macos-latest     # Apple Silicon Mac with Xcode pre-installed
+
+    steps:
+      # ── 1. Get the source ──────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Show which Xcode version the runner has ─────────────────────────
+      - name: Xcode version
+        run: xcodebuild -version
+
+      # ── 3. Build & archive (no code signing) ──────────────────────────────
+      - name: Archive (unsigned)
+        run: |
+          xcodebuild archive \
+            -project WOInventory.xcodeproj \
+            -scheme WOInventory \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/WOInventory.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
+
+      # ── 4. Package the .app into a sideloadable .ipa ───────────────────────
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -r "$RUNNER_TEMP/WOInventory.xcarchive/Products/Applications/WOInventory.app" Payload/
+          zip -r WOInventory.ipa Payload/
+          echo "IPA size: $(du -sh WOInventory.ipa | cut -f1)"
+
+      # ── 5. Upload as downloadable artifact ────────────────────────────────
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: WOInventory-IPA
+          path: WOInventory.ipa
+          retention-days: 30
