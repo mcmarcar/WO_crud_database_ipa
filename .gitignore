@@ -16,3 +16,6 @@ xcuserdata/
 
 # macOS
 .DS_Store
+
+# Credentials — never commit these
+git_credentials.txt

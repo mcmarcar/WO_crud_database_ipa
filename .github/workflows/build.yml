@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:          # also lets you trigger manually from GitHub UI
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: macos-latest     # Apple Silicon Mac with Xcode pre-installed
@@ -30,7 +33,9 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            PROVISIONING_PROFILE_SPECIFIER=""
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            VALIDATE_PRODUCT=NO \
+            SKIP_INSTALL=NO
 
       # ── 4. Package the .app into a sideloadable .ipa ───────────────────────
       - name: Package IPA
