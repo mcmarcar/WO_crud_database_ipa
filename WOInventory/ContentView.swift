@@ -53,7 +53,7 @@ struct ContentView: View {
             }
             .pickerStyle(.menu)
             .tint(.white)
-            .onChange(of: selectedSortIndex) { _, idx in
+            .onChange(of: selectedSortIndex) { idx in
                 viewModel.sortFieldKey = WorkOrder.sortFields[idx].key
             }
 
@@ -110,7 +110,7 @@ struct ContentView: View {
                 .font(.title3.weight(.semibold))
             Text(viewModel.searchText.isEmpty
                  ? "Tap + to add a new work order."
-                 : "No records match "\(viewModel.searchText)".")
+                 : "No records match \"\(viewModel.searchText)\".")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
